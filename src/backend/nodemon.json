@@ -1,0 +1,23 @@
+{
+  "watch": [
+    "src/**/*.ts",
+    "src/**/*.js"
+  ],
+  "ignore": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "tests",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "ext": ".ts,.js",
+  "exec": "ts-node --project tsconfig.json ./src/server.ts",
+  "env": {
+    "NODE_ENV": "development",
+    "TS_NODE_PROJECT": "./tsconfig.json"
+  },
+  "verbose": true,
+  "restartable": "rs",
+  "delay": 1000
+}
