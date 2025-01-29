@@ -1,0 +1,170 @@
+/* Component-specific styles for ERD visualization tool
+ * Extends shadcn/ui components with custom theming and Tailwind CSS utilities
+ * Version: 1.0.0
+ */
+
+/* Global component variables */
+:root {
+  --button-height-sm: 32px;
+  --button-height-md: 40px;
+  --button-height-lg: 48px;
+  --input-height: 40px;
+  --dropdown-width: 220px;
+  --modal-width: 480px;
+  --toast-width: 360px;
+  --focus-ring: 2px;
+  --transition-duration: 200ms;
+  --animation-duration: 150ms;
+}
+
+/* Button Components
+ * Implements primary, secondary, and tertiary actions with consistent visual hierarchy
+ */
+.btn {
+  @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors duration-[var(--transition-duration)] focus-visible:outline-none focus-visible:ring-[var(--focus-ring)] focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background [&>svg]:mr-2 [&>svg]:h-4 [&>svg]:w-4;
+}
+
+.btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/95;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/85;
+}
+
+.btn-outline {
+  @apply border border-input hover:bg-accent hover:text-accent-foreground active:bg-accent/90;
+}
+
+.btn-ghost {
+  @apply hover:bg-accent hover:text-accent-foreground active:bg-accent/90;
+}
+
+.btn-destructive {
+  @apply bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/95;
+}
+
+.btn-loading {
+  @apply relative !text-transparent [&>svg]:absolute [&>svg]:left-1/2 [&>svg]:top-1/2 [&>svg]:-translate-x-1/2 [&>svg]:-translate-y-1/2 [&>svg]:animate-spin;
+}
+
+/* Input Components
+ * Form controls with validation states and accessibility enhancements
+ */
+.input {
+  @apply flex h-[var(--input-height)] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[var(--focus-ring)] focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-destructive aria-[invalid=true]:focus-visible:ring-destructive;
+}
+
+.input-prefix {
+  @apply inline-flex items-center rounded-l-md border border-r-0 border-input bg-muted px-3 text-sm text-muted-foreground;
+}
+
+.input-suffix {
+  @apply inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm text-muted-foreground;
+}
+
+/* Dialog Components
+ * Modal overlays with improved positioning and animations
+ */
+.dialog-overlay {
+  @apply fixed inset-0 z-[400] bg-background/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0;
+}
+
+.dialog-content {
+  @apply fixed left-[50%] top-[50%] z-[400] grid w-[var(--modal-width)] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-[var(--animation-duration)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%];
+}
+
+.dialog-close {
+  @apply absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground;
+}
+
+/* Dropdown Components
+ * Menu components with keyboard navigation support
+ */
+.dropdown-content {
+  @apply z-[200] min-w-[var(--dropdown-width)] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95;
+}
+
+.dropdown-item {
+  @apply relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+}
+
+.dropdown-shortcut {
+  @apply ml-auto text-xs tracking-widest opacity-60;
+}
+
+.dropdown-separator {
+  @apply mx-1 my-1 h-px bg-muted;
+}
+
+/* Toast Components
+ * Notification components with status variants
+ */
+.toast-viewport {
+  @apply fixed bottom-0 right-0 z-[400] flex flex-col p-4 gap-2 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col-reverse;
+}
+
+.toast {
+  @apply group pointer-events-auto relative flex w-[var(--toast-width)] items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--toast-width)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full;
+}
+
+.toast-success {
+  @apply border-green-500 bg-green-500/10 text-green-500;
+}
+
+.toast-error {
+  @apply border-destructive bg-destructive/10 text-destructive;
+}
+
+.toast-close {
+  @apply absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100;
+}
+
+/* Card Components
+ * Container components with responsive design
+ */
+.card {
+  @apply rounded-lg border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md;
+}
+
+.card-header {
+  @apply flex flex-col space-y-1.5 p-6;
+}
+
+.card-title {
+  @apply text-2xl font-semibold leading-none tracking-tight;
+}
+
+.card-description {
+  @apply text-sm text-muted-foreground;
+}
+
+.card-content {
+  @apply p-6 pt-0;
+}
+
+.card-footer {
+  @apply flex items-center p-6 pt-0;
+}
+
+/* Z-index Layers
+ * Consistent stacking context for components
+ */
+:root {
+  --z-base: 100;
+  --z-dropdown: 200;
+  --z-modal: 300;
+  --z-overlay: 400;
+}
+
+/* Spacing Scale
+ * Consistent spacing units across components
+ */
+:root {
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+}
