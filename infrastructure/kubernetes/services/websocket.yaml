@@ -1,0 +1,32 @@
+# Kubernetes Service manifest for WebSocket server component
+# Version: v1
+# Purpose: Exposes WebSocket deployment for real-time collaboration features
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: websocket-service
+  namespace: erd-tool
+  labels:
+    app: websocket
+    component: real-time
+  annotations:
+    service.kubernetes.io/description: "WebSocket service for real-time collaboration using Y.js"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3001"
+
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3001
+      targetPort: 3001
+      protocol: TCP
+      name: websocket
+  selector:
+    app: websocket
+    component: real-time
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hour sticky session for WebSocket connections
