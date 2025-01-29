@@ -1,0 +1,72 @@
+# Dependencies
+node_modules
+**/node_modules
+.pnpm-store
+
+# Build outputs
+dist
+**/dist
+build
+**/build
+.next
+**/.next
+
+# Development files
+.git
+.gitignore
+.github
+.vscode
+.idea
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Test files
+tests
+**/tests
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+coverage
+**/coverage
+
+# Documentation
+*.md
+CHANGELOG.md
+LICENSE
+docs
+**/docs
+
+# Configuration files
+.eslintrc*
+.prettierrc*
+.editorconfig
+tsconfig.json
+**/tsconfig.json
+jest.config.*
+vitest.config.*
+.dockerignore
+docker-compose*.yml
+
+# Infrastructure
+infrastructure
+terraform
+kubernetes
+helm
+
+# Misc
+.DS_Store
+**/.DS_Store
+Thumbs.db
+**/Thumbs.db
