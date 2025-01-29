@@ -1,0 +1,61 @@
+{
+  "compilerOptions": {
+    // ECMAScript target version
+    "target": "ES2022",
+    "module": "CommonJS",
+    "lib": ["ES2022"],
+
+    // Output configuration
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "sourceMap": true,
+    "incremental": true,
+    "composite": true,
+
+    // Module resolution
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+
+    // Type checking
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // Additional checks
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "allowJs": false,
+
+    // Decorators support
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    // Types
+    "types": [
+      "node",
+      "jest"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage"
+  ]
+}
