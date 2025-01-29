@@ -1,0 +1,247 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "dashboard": {
+    "id": null,
+    "uid": "api-metrics",
+    "title": "API Server Metrics",
+    "tags": ["api", "nodejs", "express", "monitoring"],
+    "timezone": "browser",
+    "refresh": "10s",
+    "schemaVersion": 36,
+    "version": 1,
+    "editable": true
+  },
+  "panels": [
+    {
+      "title": "Request Rate",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "description": "HTTP request rate by method and path",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{job=\"api-server\"}[5m])",
+          "legendFormat": "{{method}} {{path}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "alert": {
+        "name": "High Request Rate",
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [100],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A", "5m", "now"]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "title": "Response Times",
+      "type": "graph", 
+      "datasource": "Prometheus",
+      "description": "Average response time by endpoint",
+      "targets": [
+        {
+          "expr": "rate(http_request_duration_seconds_sum{job=\"api-server\"}[5m]) / rate(http_request_duration_seconds_count{job=\"api-server\"}[5m])",
+          "legendFormat": "{{path}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "yaxes": [
+        {
+          "format": "s",
+          "label": "Response Time"
+        }
+      ]
+    },
+    {
+      "title": "Error Rate",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "description": "Rate of 5xx errors by endpoint",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{job=\"api-server\", status_code=~\"5.*\"}[5m])",
+          "legendFormat": "{{path}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "alert": {
+        "name": "High Error Rate",
+        "frequency": "1m",
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [0.1],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A", "5m", "now"]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "title": "Memory Usage",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "description": "Node.js process memory usage",
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes{job=\"api-server\"}",
+          "legendFormat": "Memory (bytes)"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "yaxes": [
+        {
+          "format": "bytes",
+          "label": "Memory Usage"
+        }
+      ]
+    },
+    {
+      "title": "CPU Usage",
+      "type": "graph",
+      "datasource": "Prometheus", 
+      "description": "Node.js process CPU utilization",
+      "targets": [
+        {
+          "expr": "rate(process_cpu_seconds_total{job=\"api-server\"}[5m])",
+          "legendFormat": "CPU Usage"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "yaxes": [
+        {
+          "format": "percentunit",
+          "label": "CPU Usage"
+        }
+      ]
+    },
+    {
+      "title": "Active WebSocket Connections",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "description": "Current number of active WebSocket connections",
+      "targets": [
+        {
+          "expr": "websocket_connections_total{job=\"api-server\"}",
+          "legendFormat": "Active Connections"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        }
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "instance",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(http_requests_total{job=\"api-server\"}, instance)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "sort": 1
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s", 
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m", 
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "API Server Metrics",
+  "uid": "api-metrics",
+  "version": 1
+}
