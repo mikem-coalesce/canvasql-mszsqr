@@ -1,0 +1,29 @@
+# Grafana datasources configuration v9.5+
+# Defines connections to Prometheus metrics and Loki logs
+
+apiVersion: 1
+
+datasources:
+  # Prometheus datasource for metrics collection
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    version: 1
+    editable: false
+    jsonData:
+      timeInterval: 15s
+      queryTimeout: 30s
+      httpMethod: POST
+
+  # Loki datasource for log aggregation
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    version: 1
+    editable: false
+    jsonData:
+      maxLines: 1000
+      timeout: 30
