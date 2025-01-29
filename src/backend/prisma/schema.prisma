@@ -1,0 +1,111 @@
+// @prisma/client ^5.0.0
+// Database configuration
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Client generator configuration with preview features
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "extendedWhereUnique"]
+}
+
+// User model with authentication and role-based access
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  name      String
+  role      Role       @default(USER)
+  workspaces Workspace[]
+  versions  Version[]
+  lastLogin DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+// Workspace model for project organization
+model Workspace {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  settings    Json
+  projects    Project[]
+  isArchived  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([ownerId])
+  @@map("workspaces")
+}
+
+// Project model for ERD organization
+model Project {
+  id          String    @id @default(uuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name        String
+  description String
+  metadata    Json
+  diagrams    Diagram[]
+  isArchived  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([workspaceId])
+  @@map("projects")
+}
+
+// Diagram model for ERD visualization
+model Diagram {
+  id           String    @id @default(uuid())
+  projectId    String
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  sqlDDL       String
+  layout       Json
+  annotations  Json
+  versions     Version[]
+  isLocked     Boolean   @default(false)
+  lastModified DateTime  @updatedAt
+  createdAt    DateTime  @default(now())
+
+  @@index([projectId])
+  @@map("diagrams")
+}
+
+// Version model for change tracking
+model Version {
+  id          String      @id @default(uuid())
+  diagramId   String
+  diagram     Diagram     @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  stateDelta  Json
+  description String
+  type        VersionType @default(MANUAL)
+  createdAt   DateTime    @default(now())
+
+  @@index([diagramId])
+  @@index([userId])
+  @@map("versions")
+}
+
+// Role enumeration for access control
+enum Role {
+  ADMIN
+  USER
+}
+
+// Version type enumeration
+enum VersionType {
+  MANUAL
+  AUTO
+}
