@@ -1,0 +1,42 @@
+# Frontend Service manifest for ERD Visualization Tool
+# Version: v1
+# Purpose: Exposes frontend deployment to cluster network with environment-specific routing
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: frontend-service
+  namespace: erd-visualization
+  labels:
+    app: erd-tool
+    component: frontend
+    environment: ${ENV}
+    tier: frontend
+  annotations:
+    # Prometheus monitoring configuration
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "80"
+    prometheus.io/path: "/health"
+
+spec:
+  # Using ClusterIP for internal routing with ingress-based external access
+  type: ClusterIP
+  
+  # Port configuration for HTTP traffic
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  
+  # Selector matches frontend deployment pods
+  selector:
+    app: erd-tool
+    component: frontend
+    environment: ${ENV}
+  
+  # Session handling configuration
+  sessionAffinity: None
+  
+  # Don't route traffic to pods until they're ready
+  publishNotReadyAddresses: false
