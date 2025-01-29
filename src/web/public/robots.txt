@@ -1,0 +1,50 @@
+# Collaborative ERD Visualization Tool
+# Version: 1.0.0
+# Last Updated: 2024
+
+# Allow crawling of public content
+User-agent: *
+Allow: /
+Allow: /docs/
+Allow: /features/
+Allow: /pricing/
+Allow: /about/
+Allow: /contact/
+Allow: /terms/
+Allow: /privacy/
+
+# Protect private application routes
+Disallow: /api/
+Disallow: /auth/
+Disallow: /workspace/
+Disallow: /project/
+Disallow: /diagram/
+Disallow: /settings/
+Disallow: /profile/
+
+# Protect real-time collaboration endpoints
+Disallow: /ws/
+Disallow: /socket/
+Disallow: /sync/
+
+# Protect user-generated content
+Disallow: /exports/
+Disallow: /uploads/
+Disallow: /files/
+
+# Sitemap locations
+Sitemap: https://erd-tool.example.com/sitemap.xml
+Sitemap: https://erd-tool.example.com/docs/sitemap.xml
+
+# Crawler rate limiting
+Crawl-delay: 10
+
+# Additional crawler-specific rules
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
