@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: erd-visualization
+  labels:
+    app: erd-tool
+    component: backend
+    environment: ${ENV}
+    version: ${TAG}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3000"
+    prometheus.io/path: "/metrics"
+
+spec:
+  # Configure 2 replicas as per service configuration requirements
+  replicas: 2
+
+  # Zero-downtime rolling update strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  # Pod selector matching
+  selector:
+    matchLabels:
+      app: erd-tool
+      component: backend
+
+  template:
+    metadata:
+      labels:
+        app: erd-tool
+        component: backend
+        environment: ${ENV}
+
+    spec:
+      # Security context for non-root execution
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      # Container configuration
+      containers:
+        - name: backend
+          image: erd-tool/backend:${TAG}
+          imagePullPolicy: Always
+          
+          # Expose API port
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+
+          # Resource limits and requests as per container specifications
+          resources:
+            requests:
+              cpu: "1"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+
+          # Load configuration from ConfigMap and Secrets
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secrets
+
+          # Health check probes
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+
+          # Graceful shutdown handling
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]
+
+      # Grace period for pod termination
+      terminationGracePeriodSeconds: 60
+
+      # Pod anti-affinity for high availability
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: erd-tool
+                    component: backend
+                topologyKey: kubernetes.io/hostname
