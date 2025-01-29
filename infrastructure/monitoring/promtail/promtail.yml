@@ -1,0 +1,137 @@
+# Promtail v2.8 configuration for ERD Visualization Tool
+# Handles log collection and shipping from application containers to Loki
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  http_server_read_timeout: 30s
+  http_server_write_timeout: 30s
+  grpc_server_max_recv_msg_size: 4194304
+
+positions:
+  filename: /tmp/positions.yaml
+  sync_period: 10s
+  ignore_invalid_yaml: false
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    tenant_id: erd-tool
+    batchwait: 1s
+    batchsize: 102400
+    timeout: 10s
+    backoff_config:
+      min_period: 100ms
+      max_period: 5s
+      max_retries: 10
+    retry_on_http_429: true
+    external_labels:
+      environment: production
+      cluster: erd-tool-cluster
+
+scrape_configs:
+  # API Server Log Collection
+  - job_name: api-logs
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names: [erd-tool]
+        selectors:
+          - role: pod
+            label: app=api-server
+    
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        target_label: app
+      - source_labels: [__meta_kubernetes_pod_container_name]
+        target_label: container
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: namespace
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        target_label: node
+
+    pipeline_stages:
+      - json:
+          expressions:
+            level: level
+            message: message
+            timestamp: timestamp
+            request_id: request_id
+            user_id: user_id
+            workspace_id: workspace_id
+            action: action
+            status_code: status_code
+            error: error
+      
+      - labels:
+          level: level
+          user_id: user_id
+          workspace_id: workspace_id
+          status_code: status_code
+      
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+          action_on_failure: skip
+      
+      - metrics:
+          http_requests_total:
+            type: Counter
+            source: status_code
+            config:
+              action: inc
+
+  # WebSocket Server Log Collection
+  - job_name: websocket-logs
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names: [erd-tool]
+        selectors:
+          - role: pod
+            label: app=websocket-server
+    
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        target_label: app
+      - source_labels: [__meta_kubernetes_pod_container_name]
+        target_label: container
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: namespace
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        target_label: node
+
+    pipeline_stages:
+      - json:
+          expressions:
+            level: level
+            message: message
+            timestamp: timestamp
+            connection_id: connection_id
+            user_id: user_id
+            workspace_id: workspace_id
+            event_type: event_type
+            error: error
+            latency_ms: latency_ms
+      
+      - labels:
+          level: level
+          user_id: user_id
+          workspace_id: workspace_id
+          event_type: event_type
+      
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+          action_on_failure: skip
+      
+      - metrics:
+          websocket_events_total:
+            type: Counter
+            source: event_type
+            config:
+              action: inc
+          websocket_latency_milliseconds:
+            type: Histogram
+            source: latency_ms
+            config:
+              buckets: [10, 50, 100, 200, 500, 1000]
