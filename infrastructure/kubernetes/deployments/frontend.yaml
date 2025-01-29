@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: erd-visualization
+  labels:
+    app: erd-tool
+    component: frontend
+    environment: ${ENV}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "80"
+    prometheus.io/path: "/metrics"
+
+spec:
+  # Run 2 replicas for high availability
+  replicas: 2
+
+  # Rolling update strategy to ensure zero downtime deployments
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  # Pod selector matching
+  selector:
+    matchLabels:
+      app: erd-tool
+      component: frontend
+
+  template:
+    metadata:
+      labels:
+        app: erd-tool
+        component: frontend
+    
+    spec:
+      containers:
+      - name: frontend
+        image: ${REGISTRY}/erd-tool/frontend:${TAG}
+        imagePullPolicy: Always
+        
+        # Expose container port
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        
+        # Resource limits as per technical spec
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+        # Load environment variables from configmap
+        envFrom:
+        - configMapRef:
+            name: backend-config
+
+        # Health checking
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+        # Security context
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 101
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
