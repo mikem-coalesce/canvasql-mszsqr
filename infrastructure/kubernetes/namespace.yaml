@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: erd-visualization
+  labels:
+    app.kubernetes.io/name: erd-visualization
+    app.kubernetes.io/part-of: erd-system
+    environment: production
+    security-tier: restricted
+    monitoring: enabled
+    backup: enabled
+  annotations:
+    scheduler.alpha.kubernetes.io/node-selector: "env=production"
+    net.beta.kubernetes.io/network-policy: restricted
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+    backup.velero.io/backup-volumes: "true"
+spec:
+  # Resource Quotas
+  resourceQuota:
+    hard:
+      requests.cpu: "8"
+      requests.memory: "16Gi"
+      requests.storage: "250Gi"
+      pods: "25"
+      services: "10"
+      configmaps: "20"
+      secrets: "30"
+      persistentvolumeclaims: "10"
+
+  # LimitRange for default resource constraints
+  limitRange:
+    limits:
+      - type: Container
+        defaultRequest:
+          cpu: "100m"
+          memory: "128Mi"
+        default:
+          cpu: "500m"
+          memory: "512Mi"
+        max:
+          cpu: "2"
+          memory: "4Gi"
+
+  # Security Context Constraints
+  securityContext:
+    podSecurityPolicy: restricted
+    networkPolicy: default-deny
+    seccompProfile:
+      type: RuntimeDefault
+    seLinuxOptions:
+      type: enforcing
+
+  # Network Policies
+  networkPolicies:
+    - ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: production
+      egress:
+        - to:
+            - namespaceSelector:
+                matchLabels:
+                  environment: production
+
+  # Monitoring Configuration
+  monitoring:
+    enabled: true
+    prometheusRules:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+
+  # Backup Configuration
+  backup:
+    enabled: true
+    schedule: "0 1 * * *"
+    retention:
+      hourly: 24
+      daily: 7
+      weekly: 4
+      monthly: 12
