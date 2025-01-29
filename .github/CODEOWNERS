@@ -1,0 +1,16 @@
+* @project-leads
+
+# Backend code ownership
+/src/backend/* @backend-team
+/src/backend/prisma/* @database-team
+/src/backend/src/core/utils/sql-parser.util.ts @database-team
+/src/backend/src/websocket/* @backend-team @collaboration-team
+
+# Frontend code ownership
+/src/web/* @frontend-team
+/src/web/src/components/diagram/* @frontend-team @erd-team
+
+# Infrastructure and DevOps
+/infrastructure/* @devops-team
+/infrastructure/monitoring/* @devops-team @sre-team
+/.github/workflows/* @devops-team
