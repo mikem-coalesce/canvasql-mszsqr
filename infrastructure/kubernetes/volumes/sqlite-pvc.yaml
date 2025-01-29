@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sqlite-data
+  namespace: erd-visualization
+  labels:
+    app: erd-tool
+    component: database
+    tier: storage
+  annotations:
+    # Enable backup support through Velero
+    backup.velero.io/backup-volumes: sqlite-data
+    # Specify SSD storage class for optimal performance
+    volume.beta.kubernetes.io/storage-class: standard-ssd
+
+spec:
+  # ReadWriteOnce since SQLite requires exclusive access
+  accessModes:
+    - ReadWriteOnce
+  
+  # Request 250GB SSD storage as per production requirements
+  resources:
+    requests:
+      storage: 250Gi
+  
+  # Use SSD-backed storage class for better performance
+  storageClassName: standard-ssd
