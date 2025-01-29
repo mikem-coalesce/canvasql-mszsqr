@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' wss:" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
+    
+    <!-- Primary Meta Tags -->
+    <title>ERD Visualization Tool</title>
+    <meta name="description" content="Collaborative ERD Visualization Tool for real-time database schema design" />
+    <meta name="application-name" content="ERD Visualization Tool" />
+    <meta name="theme-color" content="#ffffff" />
+    
+    <!-- PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="ERD Visualization Tool" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- Preload Critical Resources -->
+    <link 
+      rel="preload" 
+      href="/fonts/inter-var.woff2" 
+      as="font" 
+      type="font/woff2" 
+      crossorigin="anonymous"
+    />
+    <link 
+      rel="preload" 
+      href="/src/main.tsx" 
+      as="script" 
+      type="module" 
+      crossorigin="anonymous"
+    />
+    
+    <!-- Theme Detection Script -->
+    <script>
+      try {
+        const theme = localStorage.getItem('theme') || 
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.classList.add(theme);
+      } catch (e) {
+        console.error('Theme detection failed:', e);
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main" class="skip-link">
+      Skip to main content
+    </a>
+
+    <!-- React Mount Point -->
+    <div 
+      id="root" 
+      role="application" 
+      aria-label="ERD Visualization Tool"
+    >
+      <!-- Loading State -->
+      <div 
+        id="loading" 
+        role="status" 
+        aria-label="Loading application" 
+        class="flex items-center justify-center min-h-screen"
+      >
+        <svg 
+          class="animate-spin h-8 w-8 text-primary" 
+          xmlns="http://www.w3.org/2000/svg" 
+          fill="none" 
+          viewBox="0 0 24 24"
+        >
+          <circle 
+            class="opacity-25" 
+            cx="12" 
+            cy="12" 
+            r="10" 
+            stroke="currentColor" 
+            stroke-width="4"
+          />
+          <path 
+            class="opacity-75" 
+            fill="currentColor" 
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <!-- NoScript Fallback -->
+    <noscript>
+      <div class="flex items-center justify-center min-h-screen p-4 text-center">
+        <div class="max-w-md">
+          <h1 class="text-xl font-bold mb-2">JavaScript Required</h1>
+          <p>
+            This application requires JavaScript to run. Please enable JavaScript or use a browser that supports it.
+          </p>
+        </div>
+      </div>
+    </noscript>
+
+    <!-- Main Application Script -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
